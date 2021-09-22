@@ -8,6 +8,7 @@ function PassengerInput(props) {
     umur: "",
     jenisKelamin: "Pria",
     editing: true,
+    id:""
   })
 
 
@@ -28,6 +29,7 @@ function PassengerInput(props) {
           nama: state.nama,
           umur: state.umur,
           jenisKelamin: state.jenisKelamin,
+          id: state.id
         }
         props.tambahPengunjung(newData)
         setState({
@@ -35,6 +37,7 @@ function PassengerInput(props) {
           nama: "",
           umur: "",
           jenisKelamin: "Pria",
+          id:""
         })
       }
     } else {
@@ -68,6 +71,8 @@ function PassengerInput(props) {
   return (
     <div>
       <div onSubmit={handleSubmit} style={viewMode}>
+        <p>Masukkan ID</p>
+        <input type="text" className="input-text" placeholder="Nama anda ..." value={state.id} name="id" onChange={onChange} />
         <p>Masukkan Nama Anda</p>
         <input type="text" className="input-text" placeholder="Nama anda ..." value={state.nama} name="nama" onChange={onChange} />
         <p>Masukkan Umur Anda</p>
@@ -93,3 +98,4 @@ function PassengerInput(props) {
 }
 
 export default PassengerInput
+
