@@ -7,47 +7,37 @@ import {gql, useQuery, useLazyQuery, useMutation} from '@apollo/client';
 import { useState } from 'react';
 import LoadingSvg from "./LoadingSvg"
 
-const initialValue = {
-    nama: "",
-    umur: "",
-    jeniskelamin: ""
-}
-
 const GetData = gql`
     query MyQuery {
         anggota {
-        id
-        jenis_kelamin
-        nama
-        umur
+          id
+          jenis_kelamin
+          nama
+          umur
         }
-    }      
+      }      
     `
 
-function Home () {
-
-    const deleteData = gql`
-    mutation MyMutation($id: Int!) {
+const deleteData = gql`
+mutation MyMutation2($id: Int!) {
     delete_anggota_by_pk(id: $id) {
-        id
+      id
     }
-    }
-`;
+  }
+`
 
 const insertData = gql`
 mutation MyMutation($jenis_kelamin: String!, $nama: String! $umur: Int!, $id: Int!) {
     insert_anggota(objects: {jenis_kelamin: $jenis_kelamin, nama: $nama, umur: $umur, id: $id}) {
       returning {
-        jenis_kelamin
-        nama
-        umur
         id
       }
     }
   }
 `
-    
-    const GetDataByUserId = gql `
+
+
+const GetDataByUserId = gql `
         query MyQuery($id: Int!) {
         anggota(where: {id: {_eq: $id}}) {
             nama
@@ -57,35 +47,34 @@ mutation MyMutation($jenis_kelamin: String!, $nama: String! $umur: Int!, $id: In
         }
         }
     `;
+
+function Home () {
     
     const [list, setList] = useState([])
+    const {data, loading, error, refetch} = useQuery(GetData)
+
+    const [insertDataN, {loading:loadingInsert}] = useMutation(insertData, {
+        refetchQueries: [GetData]
+    });
     const [deleteDataN, {loading : loadingDelete}] = useMutation(deleteData,{
         refetchQueries: [GetData]
     });
-    const [insertDataN, {loading:loadingInsert}] = useMutation(insertData, {
-    refetchQueries: [GetData]
-  })
-    const {data, loading, error} = useQuery(GetData)
-    const [input, setInput] = useState("")
-
-
-    if(loading || loadingDelete || loadingInsert){
+    if(loading || loadingInsert || loadingDelete ){
         return <LoadingSvg/>
     }
 
     if (error){
-        console.log("error ",error)
+        console.log(error)
         return null
     }
-    
 
     const hapusPengunjung = id => {
-    deleteDataN({variables :{
-      id:id
-    }})
-  };
+        deleteDataN({variables :{
+            id:id
+        }})
+    }
 
-      const tambahPengunjung = newUser => {
+    const tambahPengunjung = newUser => {
         console.log(newUser.nama)
         const newData = {
             ...newUser
@@ -113,8 +102,9 @@ mutation MyMutation($jenis_kelamin: String!, $nama: String! $umur: Int!, $id: In
     return(
         <div>
             <Header />
-            {/* <input type="text" onChange={onchangeInput} />
-            <button onClick={onGetData}>Get Data</button> */}
+            
+            {/* <input type="text" onChange={onchangeInput} /> */}
+            {/* <button onClick={onGetData}>Get Data</button> */}
             <ListPassenger data={data?.anggota} hapusPengunjung={hapusPengunjung} />
             <PassengerInput tambahPengunjung={tambahPengunjung}/>
         </div>
